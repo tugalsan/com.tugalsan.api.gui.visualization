@@ -94,7 +94,8 @@ public class TS_VisualOrgChart {
                             if (!tooltip.includes("__hideme")){
                                 return;
                             }
-                            data.setRowProperty(index, 'style', 'color: transparent; background: transparent; border: 0; border-left: 0.8px solid #3388dd; border-radius: 0; box-shadow: 0 0; position:relative; left: 41px; ');
+                            let left = tooltip.split("_")[1];
+                            data.setRowProperty(index, 'style', 'color: transparent; background: transparent; border: 0; border-left: 0.8px solid #3388dd; border-radius: 0; box-shadow: 0 0; position:relative; left: '+left+'px; ');
                         });
                         var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
                         chart.draw(data,  {allowHtml:true, allowCollapse:true, size:'large'});
