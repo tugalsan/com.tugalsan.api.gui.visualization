@@ -26,15 +26,15 @@ public class TS_VisualOrgChart {
                     """);
     }
 
-    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int skipVerticalCount) {
-        if (skipVerticalCount == 0) {
+    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int... skipVerticalWidths) {
+        if (skipVerticalWidths.length == 0) {
             return TS_VisualOrgChart.balloonScript(sb, balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
         }
         String hidemePerv = balloonParentId;
         String hidemeCurrent = null;
-        for (int i = 0; i < skipVerticalCount; i++) {
+        for (int i = 0; i < skipVerticalWidths.length; i++) {
             hidemeCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-            TS_VisualOrgChart.balloonScript(sb, hidemeCurrent, hidemePerv, hidemeCurrent, "", "");
+            TS_VisualOrgChart.balloonScript(sb, hidemeCurrent, hidemePerv, "left_" + skipVerticalWidths[i] + hidemeCurrent, "", "");
             hidemePerv = hidemeCurrent;
         }
         return TS_VisualOrgChart.balloonScript(sb, balloonId, hidemeCurrent, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
