@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class TS_VisualOrgChart {
 
-    private static StringBuilder preScript(StringBuilder sb) {
+    public static StringBuilder preScript(StringBuilder sb) {
         return sb.append("""
                     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
                     <script type='text/javascript'>
@@ -20,7 +20,7 @@ public class TS_VisualOrgChart {
                     """);
     }
 
-    private static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
+    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
         if (TGS_StringUtils.isNullOrEmpty(balloonParentId) || Objects.equals(balloonParentId.trim(), "0")) {
             balloonParentId = "";
         }
@@ -61,7 +61,7 @@ public class TS_VisualOrgChart {
         return sb;
     }
 
-    private static StringBuilder pstScript(StringBuilder sb) {
+    public static StringBuilder pstScript(StringBuilder sb) {
         return sb.append("""
                         ];
                         data.addRows(rows);
