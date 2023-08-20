@@ -9,8 +9,8 @@ public class TS_VisualOrgChart {
     public static StringBuilder preScript(StringBuilder sb) {
         return sb.append("""
                     <style>
-                        table{
-                            border-collapse: seperate;
+                        table {
+                            border-collapse: separate;
                         }
                     </style>
                     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
