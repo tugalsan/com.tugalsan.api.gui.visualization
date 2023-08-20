@@ -1,5 +1,6 @@
 package com.tugalsan.api.gui.visualization.server;
 
+import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.string.client.TGS_StringUtils;
 import java.util.Objects;
 
@@ -20,7 +21,21 @@ public class TS_VisualOrgChart {
                     """);
     }
 
-    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
+    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int skipVerticalCount) {
+        if (skipVerticalCount == 0) {
+            return TS_VisualOrgChart.balloonScript(sb, balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
+        }
+        String hidemePerv = balloonParentId;
+        String hidemeCurrent = null;
+        for (int i = 0; i < skipVerticalCount; i++) {
+            hidemeCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+            TS_VisualOrgChart.balloonScript(sb, hidemeCurrent, hidemePerv, hidemeCurrent, "", "");
+            hidemePerv = hidemeCurrent;
+        }
+        return TS_VisualOrgChart.balloonScript(sb, balloonId, hidemeCurrent, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
+    }
+
+    private static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
         if (TGS_StringUtils.isNullOrEmpty(balloonParentId) || Objects.equals(balloonParentId.trim(), "0")) {
             balloonParentId = "";
         }
