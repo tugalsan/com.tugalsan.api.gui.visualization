@@ -2,13 +2,41 @@ package com.tugalsan.api.gui.visualization.server;
 
 import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.string.client.TGS_StringUtils;
+import com.tugalsan.api.tuple.client.TGS_Tuple2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class TS_VisualOrgChart {
 
-    public static String preScript() {
+    private TS_VisualOrgChart() {
+    }
+
+    public static TS_VisualOrgChart of() {
+        return new TS_VisualOrgChart();
+    }
+    private List<TGS_Tuple2<String, String>> swapParentId_from_to = new ArrayList();
+    private List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> items = new ArrayList();
+
+    public TS_VisualOrgChart add(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
+        return add(balloonConfig, null);
+    }
+
+    public TS_VisualOrgChart add(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
+        items.add(TGS_Tuple2.of(balloonConfig, placementConfig));
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder();
+        sb.append(preScript());
+        items.forEach(item -> balloonScript(item.value0, item.value1));
+        sb.append(pstScript());
+        return sb.toString();
+    }
+
+    private String preScript() {
         return """
                     <style>
                         table {
@@ -28,31 +56,52 @@ public class TS_VisualOrgChart {
                     """;
     }
 
-    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
-        balloonConfig = balloonConfig.cloneIt();
+    public StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
         var sb = new StringBuilder();
-        List<TS_VisualOrgChart_ConfigBalloon> ballons = new ArrayList();
+        //MUTABLE BALLON
+        var balloonConfigMutable = balloonConfig.cloneIt();
+        //SWAP PARENT ID TO A HIDDEN ONE IF childerenTreeVerticalDown proccessed before
+        var swapParentId = swapParentId_from_to.stream()
+                .filter(ft -> Objects.equals(ft.value0, balloonConfigMutable.balloonParentId))
+                .findAny().orElse(null);
+        if (swapParentId != null) {
+            balloonConfigMutable.balloonParentId = swapParentId.value1;
+        }
+        //CONSTRUCT ballonsPre
+        List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPre = new ArrayList();
         if (placementConfig != null && placementConfig.currentBalloonVerticalDown > 0) {
-            var hidemeParentIdPrevious = balloonConfig.balloonParentId;
-            var hidemeParentIdCurrent = "";
+            var hidemeIdPrevious = balloonConfigMutable.balloonParentId;
+            var hidemeIdCurrent = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
-                hidemeParentIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-                ballons.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + placementConfig.leftPx + hidemeParentIdCurrent, "", ""));
-                hidemeParentIdPrevious = hidemeParentIdCurrent;
+                hidemeIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+                balloonConfigsPre.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeIdCurrent, hidemeIdPrevious, "left_" + placementConfig.leftPx + hidemeIdCurrent, "", ""));
+                hidemeIdPrevious = hidemeIdCurrent;
             }
-            balloonConfig.balloonParentId = hidemeParentIdCurrent;
-            ballons.add(balloonConfig);
-        } else {
-            ballons.add(balloonConfig);
+            balloonConfigMutable.balloonParentId = hidemeIdCurrent;
         }
+        //CONSTRUCT ballonsPst
+        List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPst = new ArrayList();
         if (placementConfig != null && placementConfig.childerenTreeVerticalDown > 0) {
-
+            var hidemeIdPrevious = balloonConfigMutable.balloonId;
+            var hidemeIdCurrent = "";
+            for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
+                hidemeIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+                balloonConfigsPre.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeIdCurrent, hidemeIdPrevious, "left_" + placementConfig.leftPx + hidemeIdCurrent, "", ""));
+                hidemeIdPrevious = hidemeIdCurrent;
+            }
+            swapParentId_from_to.add(TGS_Tuple2.of(balloonConfig.balloonId, hidemeIdCurrent));
         }
-        ballons.forEach(balloon -> sb.append(balloonScript(balloon)));
+        //CONSTRUCT ballonsAll
+        List<TS_VisualOrgChart_ConfigBalloon> ballonsAll = new ArrayList();
+        ballonsAll.addAll(balloonConfigsPre);
+        ballonsAll.add(balloonConfigMutable);
+        ballonsAll.addAll(balloonConfigsPst);
+        ballonsAll.forEach(b -> sb.append(balloonScript(b)));
+        //POST AS STR
         return sb;
     }
 
-    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
+    private StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
         balloonConfig = balloonConfig.cloneIt();
         var sb = new StringBuilder();
         if (TGS_StringUtils.isNullOrEmpty(balloonConfig.balloonParentId) || Objects.equals(balloonConfig.balloonParentId.trim(), "0")) {
@@ -95,7 +144,7 @@ public class TS_VisualOrgChart {
         return sb;
     }
 
-    public static String pstScript() {
+    public String pstScript() {
         return """
                         ];
                         data.addRows(rows);
