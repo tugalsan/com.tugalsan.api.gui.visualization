@@ -31,7 +31,7 @@ public class TS_VisualOrgChart {
     public String toString() {
         var sb = new StringBuilder();
         sb.append(preScript());
-        items.forEach(item -> balloonScript(item.value0, item.value1));
+        items.forEach(item -> sb.append(balloonScript(item.value0, item.value1)));
         sb.append(pstScript());
         return sb.toString();
     }
