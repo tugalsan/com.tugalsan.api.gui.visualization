@@ -18,4 +18,9 @@ public class TS_VisualOrgChart_ConfigBalloon {
     public static TS_VisualOrgChart_ConfigBalloon of(String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
         return new TS_VisualOrgChart_ConfigBalloon(balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
     }
+
+    @Override
+    public String toString() {
+        return TS_VisualOrgChart_ConfigBalloon.class.getSimpleName() + "{" + "balloonId=" + balloonId + ", balloonParentId=" + balloonParentId + ", balloonTooltip=" + balloonTooltip + ", balloonHtmlHeader=" + balloonHtmlHeader + ", balloonHtmlText=" + balloonHtmlText + '}';
+    }
 }

@@ -17,4 +17,9 @@ public class TS_VisualOrgChart_ConfigPlacement {
     public static TS_VisualOrgChart_ConfigPlacement of(int leftPx, int currentBalloonVerticalDown, int childerenTreeVerticalDown) {
         return new TS_VisualOrgChart_ConfigPlacement(leftPx, currentBalloonVerticalDown, childerenTreeVerticalDown);
     }
+
+    @Override
+    public String toString() {
+        return TS_VisualOrgChart_ConfigPlacement.class.getSimpleName() + "{" + "leftPx=" + leftPx + ", currentBalloonVerticalDown=" + currentBalloonVerticalDown + ", childerenTreeVerticalDown=" + childerenTreeVerticalDown + '}';
+    }
 }

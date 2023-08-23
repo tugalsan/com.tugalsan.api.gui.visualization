@@ -28,16 +28,16 @@ public class TS_VisualOrgChart {
                     """;
     }
 
-    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement advancedConfig) {
+    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
         balloonConfig = balloonConfig.cloneIt();
         var sb = new StringBuilder();
         List<TS_VisualOrgChart_ConfigBalloon> ballons = new ArrayList();
-        if (advancedConfig != null && advancedConfig.currentBalloonVerticalDown > 0) {
+        if (placementConfig != null && placementConfig.currentBalloonVerticalDown > 0) {
             var hidemeParentIdPrevious = balloonConfig.balloonParentId;
             var hidemeParentIdCurrent = "";
-            for (var i = 0; i < advancedConfig.currentBalloonVerticalDown; i++) {
+            for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
                 hidemeParentIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-                ballons.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + advancedConfig.leftPx + hidemeParentIdCurrent, "", ""));
+                ballons.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + placementConfig.leftPx + hidemeParentIdCurrent, "", ""));
                 hidemeParentIdPrevious = hidemeParentIdCurrent;
             }
             balloonConfig.balloonParentId = hidemeParentIdCurrent;
@@ -45,26 +45,13 @@ public class TS_VisualOrgChart {
         } else {
             ballons.add(balloonConfig);
         }
-        if (advancedConfig != null && advancedConfig.childerenTreeVerticalDown > 0) {
+        if (placementConfig != null && placementConfig.childerenTreeVerticalDown > 0) {
 
         }
         ballons.forEach(balloon -> sb.append(balloonScript(balloon)));
         return sb;
     }
 
-//    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int... skipVerticalWidths) {
-//        if (skipVerticalWidths.length != 0) {
-//            var hidemeParentIdPrevious = balloonParentId;
-//            String hidemeParentIdCurrent = null;
-//            for (var i = 0; i < skipVerticalWidths.length; i++) {
-//                hidemeParentIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-//                TS_VisualOrgChart.balloonScript(sb, hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + skipVerticalWidths[i] + hidemeParentIdCurrent, "", "");
-//                hidemeParentIdPrevious = hidemeParentIdCurrent;
-//            }
-//            balloonParentId = hidemeParentIdCurrent;
-//        }
-//        return TS_VisualOrgChart.balloonScript(sb, balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
-//    }
     public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
         balloonConfig = balloonConfig.cloneIt();
         var sb = new StringBuilder();
