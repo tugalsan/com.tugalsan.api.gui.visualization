@@ -19,8 +19,8 @@ public class TS_VisualOrgChart {
     public static TS_VisualOrgChart of() {
         return new TS_VisualOrgChart();
     }
-    private List<TGS_Tuple2<String, String>> swapParentId_from_to = new ArrayList();
-    private List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> items = new ArrayList();
+    final private List<TGS_Tuple2<String, String>> swapParentId_from_to = new ArrayList();
+    final private List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> items = new ArrayList();
 
     public TS_VisualOrgChart add(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
         return add(balloonConfig, null);
@@ -60,6 +60,7 @@ public class TS_VisualOrgChart {
                     """;
     }
 
+    //TODO: swapParentId_from_to NOT WORKUNG 
     public String balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
         //MUTABLE BALLON
         var balloonConfigMutable = balloonConfig.cloneIt();
