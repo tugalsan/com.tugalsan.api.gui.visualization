@@ -100,7 +100,7 @@ public class TS_VisualOrgChart {
         ballonsAll.add(balloonConfigMutable);
         ballonsAll.addAll(balloonConfigsPst);
         ballonsAll.forEach(b -> {
-            d.ci("balloonScript", b.id, b.parentId, b.balloonTooltip, b.htmlHeader);
+            d.ci("balloonScript", b.id, b.parentId, b.tooltip, b.htmlHeader);
         });
         //POST AS STR
         return TGS_StringUtils.concat(TGS_StreamUtils.toLst(
@@ -144,7 +144,7 @@ public class TS_VisualOrgChart {
             }
             sb.append("}");
             sb.append(", '").append(balloonConfig.parentId).append("'");
-            sb.append(", '").append(balloonConfig.balloonTooltip).append("'");
+            sb.append(", '").append(balloonConfig.tooltip).append("'");
         }
         sb.append("],");
         sb.append("\n");
