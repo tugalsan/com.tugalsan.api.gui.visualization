@@ -92,7 +92,7 @@ public class TS_VisualOrgChart {
         List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPst = new ArrayList();
         if (placementConfig != null && placementConfig.childerenTreeVerticalDown > 0) {
             var hidemeParentId = balloonConfigMutable.id;
-            for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
+            for (var i = 0; i < placementConfig.childerenTreeVerticalDown; i++) {
                 var hidemeId = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
                 balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeId, 
