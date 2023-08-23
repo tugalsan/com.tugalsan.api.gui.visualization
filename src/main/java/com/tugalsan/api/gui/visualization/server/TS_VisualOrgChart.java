@@ -75,9 +75,8 @@ public class TS_VisualOrgChart {
         List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPre = new ArrayList();
         if (placementConfig != null && placementConfig.currentBalloonVerticalDown > 0) {
             var hidemeParentId = balloonConfigMutable.parentId;
-            var hidemeId = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
-                hidemeId = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+                var hidemeId = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
                 balloonConfigsPre.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeId, 
                         hidemeParentId, 
@@ -87,15 +86,14 @@ public class TS_VisualOrgChart {
                 ));
                 hidemeParentId = hidemeId;
             }
-            balloonConfigMutable.parentId = hidemeId;
+            balloonConfigMutable.parentId = hidemeParentId;
         }
         //CONSTRUCT ballonsPst
         List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPst = new ArrayList();
         if (placementConfig != null && placementConfig.childerenTreeVerticalDown > 0) {
             var hidemeParentId = balloonConfigMutable.id;
-            var hidemeId = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
-                hidemeId = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+                var hidemeId = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
                 balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeId, 
                         hidemeParentId, 
