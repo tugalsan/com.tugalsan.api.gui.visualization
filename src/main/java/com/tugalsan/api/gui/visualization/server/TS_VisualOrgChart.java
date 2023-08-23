@@ -74,36 +74,36 @@ public class TS_VisualOrgChart {
         //CONSTRUCT ballonsPre
         List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPre = new ArrayList();
         if (placementConfig != null && placementConfig.currentBalloonVerticalDown > 0) {
-            var hidemeIdPrevious = balloonConfigMutable.parentId;
+            var hidemeIdParent = balloonConfigMutable.parentId;
             var hidemeIdCurrent = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
                 hidemeIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
                 balloonConfigsPre.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeIdCurrent, 
-                        hidemeIdPrevious, 
+                        hidemeIdParent, 
                         "left_" + placementConfig.leftPx + hidemeIdCurrent, 
                         "", 
                         ""
                 ));
-                hidemeIdPrevious = hidemeIdCurrent;
+                hidemeIdParent = hidemeIdCurrent;
             }
             balloonConfigMutable.parentId = hidemeIdCurrent;
         }
         //CONSTRUCT ballonsPst
         List<TS_VisualOrgChart_ConfigBalloon> balloonConfigsPst = new ArrayList();
         if (placementConfig != null && placementConfig.childerenTreeVerticalDown > 0) {
-            var hidemeIdPrevious = balloonConfigMutable.id;
+            var hidemeIdParent = balloonConfigMutable.id;
             var hidemeIdCurrent = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
                 hidemeIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
                 balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeIdCurrent, 
-                        hidemeIdPrevious, 
+                        hidemeIdParent, 
                         "left_" + placementConfig.leftPx + hidemeIdCurrent, 
                         "", 
                         ""
                 ));
-                hidemeIdPrevious = hidemeIdCurrent;
+                hidemeIdParent = hidemeIdCurrent;
             }
             swapParentId_from_to.add(TGS_Tuple2.of(balloonConfig.id, hidemeIdCurrent));
         }
