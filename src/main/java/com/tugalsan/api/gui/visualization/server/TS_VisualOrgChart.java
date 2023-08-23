@@ -1,6 +1,7 @@
 package com.tugalsan.api.gui.visualization.server;
 
 import com.tugalsan.api.random.client.TGS_RandomUtils;
+import com.tugalsan.api.stream.client.TGS_StreamUtils;
 import com.tugalsan.api.string.client.TGS_StringUtils;
 import com.tugalsan.api.tuple.client.TGS_Tuple2;
 import java.util.ArrayList;
@@ -56,8 +57,7 @@ public class TS_VisualOrgChart {
                     """;
     }
 
-    public StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
-        var sb = new StringBuilder();
+    public String balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
         //MUTABLE BALLON
         var balloonConfigMutable = balloonConfig.cloneIt();
         //SWAP PARENT ID TO A HIDDEN ONE IF childerenTreeVerticalDown proccessed before
@@ -96,9 +96,10 @@ public class TS_VisualOrgChart {
         ballonsAll.addAll(balloonConfigsPre);
         ballonsAll.add(balloonConfigMutable);
         ballonsAll.addAll(balloonConfigsPst);
-        ballonsAll.forEach(b -> sb.append(balloonScript(b)));
         //POST AS STR
-        return sb;
+        return TGS_StringUtils.concat(TGS_StreamUtils.toLst(
+                ballonsAll.stream().map(b -> balloonScript(b).toString())
+        ));
     }
 
     private StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
