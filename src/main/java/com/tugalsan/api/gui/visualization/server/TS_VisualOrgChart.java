@@ -103,7 +103,7 @@ public class TS_VisualOrgChart {
                 ));
                 hidemeParentId = hidemeId;
             }
-            swapParentId_from_to.add(TGS_Tuple2.of(balloonConfig.id, hidemeParentId));
+            swapParentId_from_to.add(TGS_Tuple2.of(balloonConfigMutable.id, hidemeParentId));
         }
         //CONSTRUCT ballonsAll
         List<TS_VisualOrgChart_ConfigBalloon> ballonsAll = new ArrayList();
