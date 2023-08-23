@@ -2,12 +2,14 @@ package com.tugalsan.api.gui.visualization.server;
 
 import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.string.client.TGS_StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class TS_VisualOrgChart {
 
-    public static StringBuilder preScript(StringBuilder sb) {
-        return sb.append("""
+    public static String preScript() {
+        return """
                     <style>
                         table {
                             border-collapse: separate;
@@ -23,26 +25,51 @@ public class TS_VisualOrgChart {
                         data.addColumn('string', 'Manager');
                         data.addColumn('string', 'ToolTip');
                         const rows = [
-                    """);
+                    """;
     }
 
-    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int... skipVerticalWidths) {
-        if (skipVerticalWidths.length == 0) {
-            return TS_VisualOrgChart.balloonScript(sb, balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
+    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement advancedConfig) {
+        balloonConfig = balloonConfig.cloneIt();
+        var sb = new StringBuilder();
+        List<TS_VisualOrgChart_ConfigBalloon> ballons = new ArrayList();
+        if (advancedConfig != null && advancedConfig.currentBalloonVerticalDown > 0) {
+            var hidemeParentIdPrevious = balloonConfig.balloonParentId;
+            var hidemeParentIdCurrent = "";
+            for (var i = 0; i < advancedConfig.currentBalloonVerticalDown; i++) {
+                hidemeParentIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+                ballons.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + advancedConfig.leftPx + hidemeParentIdCurrent, "", ""));
+                hidemeParentIdPrevious = hidemeParentIdCurrent;
+            }
+            balloonConfig.balloonParentId = hidemeParentIdCurrent;
+            ballons.add(balloonConfig);
+        } else {
+            ballons.add(balloonConfig);
         }
-        String hidemePerv = balloonParentId;
-        String hidemeCurrent = null;
-        for (int i = 0; i < skipVerticalWidths.length; i++) {
-            hidemeCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-            TS_VisualOrgChart.balloonScript(sb, hidemeCurrent, hidemePerv, "left_" + skipVerticalWidths[i] + hidemeCurrent, "", "");
-            hidemePerv = hidemeCurrent;
+        if (advancedConfig != null && advancedConfig.childerenTreeVerticalDown > 0) {
+
         }
-        return TS_VisualOrgChart.balloonScript(sb, balloonId, hidemeCurrent, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
+        ballons.forEach(balloon -> sb.append(balloonScript(balloon)));
+        return sb;
     }
 
-    private static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText) {
-        if (TGS_StringUtils.isNullOrEmpty(balloonParentId) || Objects.equals(balloonParentId.trim(), "0")) {
-            balloonParentId = "";
+//    public static StringBuilder balloonScript(StringBuilder sb, String balloonId, String balloonParentId, String balloonTooltip, String balloonHtmlHeader, String balloonHtmlText, int... skipVerticalWidths) {
+//        if (skipVerticalWidths.length != 0) {
+//            var hidemeParentIdPrevious = balloonParentId;
+//            String hidemeParentIdCurrent = null;
+//            for (var i = 0; i < skipVerticalWidths.length; i++) {
+//                hidemeParentIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
+//                TS_VisualOrgChart.balloonScript(sb, hidemeParentIdCurrent, hidemeParentIdPrevious, "left_" + skipVerticalWidths[i] + hidemeParentIdCurrent, "", "");
+//                hidemeParentIdPrevious = hidemeParentIdCurrent;
+//            }
+//            balloonParentId = hidemeParentIdCurrent;
+//        }
+//        return TS_VisualOrgChart.balloonScript(sb, balloonId, balloonParentId, balloonTooltip, balloonHtmlHeader, balloonHtmlText);
+//    }
+    public static StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
+        balloonConfig = balloonConfig.cloneIt();
+        var sb = new StringBuilder();
+        if (TGS_StringUtils.isNullOrEmpty(balloonConfig.balloonParentId) || Objects.equals(balloonConfig.balloonParentId.trim(), "0")) {
+            balloonConfig.balloonParentId = "";
         }
         sb.append("        [");
         {
@@ -50,7 +77,7 @@ public class TS_VisualOrgChart {
             {
                 {
                     sb.append("v:'");
-                    sb.append(balloonId);
+                    sb.append(balloonConfig.balloonId);
                     sb.append("'");
                 }
                 sb.append(", ");
@@ -59,13 +86,13 @@ public class TS_VisualOrgChart {
                     {
                         {
                             sb.append("<div style=\"color: var(--colorTextPrimary);\"><B>");
-                            sb.append(balloonHtmlHeader);
+                            sb.append(balloonConfig.balloonHtmlHeader);
                             sb.append("</B>");
                         }
                         sb.append("<br/>");
                         {
                             sb.append("<div style=\"color: var(--colorTextSecondary);\">");
-                            sb.append(balloonHtmlText);
+                            sb.append(balloonConfig.balloonHtmlText);
                             sb.append("</div></div>");
                         }
                     }
@@ -73,16 +100,16 @@ public class TS_VisualOrgChart {
                 }
             }
             sb.append("}");
-            sb.append(", '").append(balloonParentId).append("'");
-            sb.append(", '").append(balloonTooltip).append("'");
+            sb.append(", '").append(balloonConfig.balloonParentId).append("'");
+            sb.append(", '").append(balloonConfig.balloonTooltip).append("'");
         }
         sb.append("],");
         sb.append("\n");
         return sb;
     }
 
-    public static StringBuilder pstScript(StringBuilder sb) {
-        return sb.append("""
+    public static String pstScript() {
+        return """
                         ];
                         data.addRows(rows);
                         for (var i = 0; i< data.getNumberOfRows(); i++){
@@ -102,7 +129,7 @@ public class TS_VisualOrgChart {
                     }
                     </script>
                     <div id='chart_div'></div>
-                    """);
+                    """;
     }
 
 }
