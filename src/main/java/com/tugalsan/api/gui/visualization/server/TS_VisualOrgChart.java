@@ -86,7 +86,7 @@ public class TS_VisualOrgChart {
             var hidemeIdCurrent = "";
             for (var i = 0; i < placementConfig.currentBalloonVerticalDown; i++) {
                 hidemeIdCurrent = "__hideme" + TGS_RandomUtils.nextString(10, true, true, true, false, null);
-                balloonConfigsPre.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeIdCurrent, hidemeIdPrevious, "left_" + placementConfig.leftPx + hidemeIdCurrent, "", ""));
+                balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(hidemeIdCurrent, hidemeIdPrevious, "left_" + placementConfig.leftPx + hidemeIdCurrent, "", ""));
                 hidemeIdPrevious = hidemeIdCurrent;
             }
             swapParentId_from_to.add(TGS_Tuple2.of(balloonConfig.balloonId, hidemeIdCurrent));
