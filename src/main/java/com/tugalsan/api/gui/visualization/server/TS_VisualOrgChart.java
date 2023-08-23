@@ -60,7 +60,6 @@ public class TS_VisualOrgChart {
                     """;
     }
 
-    //TODO: swapParentId_from_to NOT WORKUNG 
     public String balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
         //MUTABLE BALLON
         var balloonConfigMutable = balloonConfig.cloneIt();
