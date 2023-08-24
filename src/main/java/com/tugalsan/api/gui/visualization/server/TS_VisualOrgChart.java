@@ -140,13 +140,17 @@ public class TS_VisualOrgChart {
                 balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeId,
                         hidemeParentId,
-                        "left_" + placementConfig.leftPx + (placementConfig.dotted ? "_style_dotted" : "_style_normal") + hidemeId,
+                        "left_" + placementConfig.leftPx + hidemeId,
                         "",
                         ""
                 ));
                 hidemeParentId = hidemeId;
             }
             kickParentId_from_to.add(TGS_Tuple2.of(balloonConfigMutable.id, hidemeParentId));
+        }
+        //ADD STYLE DATA
+        if (placementConfig != null && placementConfig.dotted) {
+            balloonConfigMutable.tooltip += "_style_dotted";
         }
         //CONSTRUCT ballonsAll
         List<TS_VisualOrgChart_ConfigBalloon> ballonsAll = new ArrayList();
@@ -209,22 +213,24 @@ public class TS_VisualOrgChart {
         return """
                         ];
                         data.addRows(rows);
-                        for (var i = 0; i< data.getNumberOfRows(); i++){
-                            data.setRowProperty(i, 'style', 'background-color:var(--widgetBackground);background-image:none');
-                            data.setRowProperty(i, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none');	
-                        }
+//                        for (var i = 0; i< data.getNumberOfRows(); i++){
+//                            data.setRowProperty(i, 'style', 'background-color:var(--widgetBackground);background-image:none');
+//                            data.setRowProperty(i, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none');	
+//                        }
                         rows.forEach((value, index) => {
+                            data.setRowProperty(index, 'style', 'background-color:var(--widgetBackground);background-image:none');
+                            data.setRowProperty(index, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none');	
                             let tooltip = value[2];
                             let hidden = tooltip.includes("__hideme");
-                            if (hidden){
+                            if (hidden) {
                                 let left = tooltip.split("_")[1];
                                 data.setRowProperty(index, 'style', 'color: transparent; background: transparent; border: 0; border-left: 0.8px solid #3388dd; border-radius: 0; box-shadow: 0 0; position:relative; left: '+left+'px; ');
                                 return;
                             }
                             let dotted = tooltip.includes("_style_dotted");
                             if (dotted) {
-                                data.setRowProperty(i, 'style', 'background-color:var(--widgetBackground);background-image:none;border-style:dotted');
-                                data.setRowProperty(i, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none;border-style:dotted');	
+                                data.setRowProperty(index, 'style', 'background-color:var(--widgetBackground);background-image:none;border:1px dashed');
+                                data.setRowProperty(index, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none;border:1px dashed');	
                             }
                         });
                         var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
