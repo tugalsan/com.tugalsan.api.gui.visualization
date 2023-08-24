@@ -229,8 +229,8 @@ public class TS_VisualOrgChart {
                             }
                             let dotted = tooltip.includes("_style_dotted");
                             if (dotted) {
-                                data.setRowProperty(index, 'style', 'background-color:var(--widgetBackground);background-image:none;border:1px dashed');
-                                data.setRowProperty(index, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none;border:1px dashed');	
+                                data.setRowProperty(index, 'style', 'background-color:var(--widgetBackground);background-image:none;border:2px dashed');
+                                data.setRowProperty(index, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none;border:2px dashed');	
                             }
                         });
                         var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
