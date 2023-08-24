@@ -140,7 +140,7 @@ public class TS_VisualOrgChart {
                 balloonConfigsPst.add(TS_VisualOrgChart_ConfigBalloon.of(
                         hidemeId,
                         hidemeParentId,
-                        "left_" + placementConfig.leftPx + hidemeId,
+                        "left_" + placementConfig.leftPx + (placementConfig.dotted ? "_style_dotted" : "_style_normal") + hidemeId,
                         "",
                         ""
                 ));
@@ -215,11 +215,17 @@ public class TS_VisualOrgChart {
                         }
                         rows.forEach((value, index) => {
                             let tooltip = value[2];
-                            if (!tooltip.includes("__hideme")){
+                            let hidden = tooltip.includes("__hideme");
+                            if (hidden){
+                                let left = tooltip.split("_")[1];
+                                data.setRowProperty(index, 'style', 'color: transparent; background: transparent; border: 0; border-left: 0.8px solid #3388dd; border-radius: 0; box-shadow: 0 0; position:relative; left: '+left+'px; ');
                                 return;
                             }
-                            let left = tooltip.split("_")[1];
-                            data.setRowProperty(index, 'style', 'color: transparent; background: transparent; border: 0; border-left: 0.8px solid #3388dd; border-radius: 0; box-shadow: 0 0; position:relative; left: '+left+'px; ');
+                            let dotted = tooltip.includes("_style_dotted");
+                            if (dotted) {
+                                data.setRowProperty(i, 'style', 'background-color:var(--widgetBackground);background-image:none;border-style:dotted');
+                                data.setRowProperty(i, 'selectedStyle', 'background-color:var(--widgetSelected);background-image:none;border-style:dotted');	
+                            }
                         });
                         var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
                         chart.draw(data,  {allowHtml:true, allowCollapse:true, size:'large'});
