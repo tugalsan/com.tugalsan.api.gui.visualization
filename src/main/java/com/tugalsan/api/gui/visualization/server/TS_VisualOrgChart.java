@@ -35,21 +35,51 @@ public class TS_VisualOrgChart {
 
     @Override
     public String toString() {
+        sortItemsByHierarchy();
         var sb = new StringBuilder();
         sb.append(preScript());
-        for (var i = 0; i < items.size(); i++) {//SORT BY HIEARCY
-            var itemI = items.get(i);
-            var superIdx = IntStream.range(1, items.size())
-                    .filter(j -> Objects.equals(items.get(j).value0.id, itemI.value0.parentId))
-                    .findAny().orElse(-1);
-            if (superIdx != -1) {
-                TGS_ListSwapUtils.swap(i, superIdx, items);
-            }
-            i--;
-        }
         items.forEach(item -> sb.append(balloonScript_should_sorted_first_to_kickChilderen(item.value0, item.value1)));
         sb.append(pstScript());
         return sb.toString();
+    }
+
+    private void sortItemsByHierarchy() {
+        List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> itemsMoved = new ArrayList();
+        itemsMoved.addAll(items);
+        items.clear();
+        var loopRunLimit = 1000;
+        while (itemsMoved.size() > 1) {
+            //DETECT CIRCULER ID RELATION
+            loopRunLimit--;
+            if (loopRunLimit == 0) {
+                d.ce("sortItemsByHierarchy", "ERROR: loopRunLimit == 0 reached", "circuler related id'ed items will be skipped");
+                itemsMoved.forEach(si -> d.ce("sortItemsByHierarchy", "(id, parentId)", si.value0.id, si.value0.parentId));
+                break;
+            }
+            var item = itemsMoved.get(0);
+            //IF ITEM ID AND PARENT_ID EQUALS, OMIT ITEM
+            if (Objects.equals(item.value0.id, item.value0.parentId)) {
+                itemsMoved.remove(item);
+                d.ce("sortItemsByHierarchy", "ERROR: Objects.equals(item.value0.id, item.value0.parentId)", "item will be skipped", "(id, parentId)", item.value0.id, item.value0.parentId);
+                continue;
+            }
+            {// IF PARENT_ID IS NOT FOUND ON NEXT ITEMS AS ID, ACCEPT THE ITEM AS NEXT HIERARCY ELEMENT AS MOVING
+                var idx_superIdFound = IntStream.range(1, itemsMoved.size())
+                        .filter(i -> Objects.equals(itemsMoved.get(i).value0.id, item.value0.parentId))
+                        .findAny().orElse(-1);
+                if (idx_superIdFound == -1) {
+                    d.ci("sortItemsByHierarchy", "idx_superIdFound == -1", "(id, parentId)", item.value0.id, item.value0.parentId);
+                    itemsMoved.remove(item);
+                    items.add(item);
+                    continue;
+                }
+            }
+            {//PUT THE USELESS ITEM TO LAST TO DEAL LATER
+                d.ci("sortItemsByHierarchy", "uselessItem", "(id, parentId)", item.value0.id, item.value0.parentId);
+                itemsMoved.remove(item);
+                itemsMoved.add(item);
+            }
+        }
     }
 
     private String preScript() {
