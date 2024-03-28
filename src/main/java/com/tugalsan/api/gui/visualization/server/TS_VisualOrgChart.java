@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 public class TS_VisualOrgChart {
 
-    final private static TS_Log d = TS_Log.of(true, TS_VisualOrgChart.class);
+    final private static TS_Log d = TS_Log.of( TS_VisualOrgChart.class);
 
     private TS_VisualOrgChart() {
     }
