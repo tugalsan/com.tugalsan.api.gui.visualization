@@ -4,7 +4,6 @@ import com.tugalsan.api.log.server.TS_Log;
 import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.stream.client.TGS_StreamUtils;
 import com.tugalsan.api.string.client.TGS_StringUtils;
-import com.tugalsan.api.tuple.client.TGS_Tuple2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +11,7 @@ import java.util.stream.IntStream;
 
 public class TS_VisualOrgChart {
 
-    final private static TS_Log d = TS_Log.of( TS_VisualOrgChart.class);
+    final private static TS_Log d = TS_Log.of(TS_VisualOrgChart.class);
 
     private TS_VisualOrgChart() {
     }
@@ -20,15 +19,27 @@ public class TS_VisualOrgChart {
     public static TS_VisualOrgChart of() {
         return new TS_VisualOrgChart();
     }
-    final private List<TGS_Tuple2<String, String>> kickParentId_from_to = new ArrayList();
-    final private List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> items = new ArrayList();
+
+    public static record Kick(String parentIdFrom, String parentIdTo) {
+
+    }
+    final private List<Kick> kickParentId_from_to = new ArrayList();
+
+    public static record Config(TS_VisualOrgChart_ConfigBalloon balloon, TS_VisualOrgChart_ConfigPlacement placement) {
+
+    }
+    final private List<Config> items = new ArrayList();
 
     public TS_VisualOrgChart add(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
         return add(balloonConfig, null);
     }
 
     public TS_VisualOrgChart add(TS_VisualOrgChart_ConfigBalloon balloonConfig, TS_VisualOrgChart_ConfigPlacement placementConfig) {
-        items.add(TGS_Tuple2.of(balloonConfig, placementConfig));
+        return add(new Config(balloonConfig, placementConfig));
+    }
+
+    public TS_VisualOrgChart add(Config config) {
+        items.add(config);
         return this;
     }
 
@@ -37,13 +48,13 @@ public class TS_VisualOrgChart {
         sortItemsByHierarchy();
         var sb = new StringBuilder();
         sb.append(preScript());
-        items.forEach(item -> sb.append(balloonScript_should_sorted_first_to_kickChilderen(item.value0, item.value1)));
+        items.forEach(item -> sb.append(balloonScript_should_sorted_first_to_kickChilderen(item.balloon(), item.placement())));
         sb.append(pstScript());
         return sb.toString();
     }
 
     private void sortItemsByHierarchy() {
-        List<TGS_Tuple2<TS_VisualOrgChart_ConfigBalloon, TS_VisualOrgChart_ConfigPlacement>> itemsMoved = new ArrayList();
+        List<Config> itemsMoved = new ArrayList();
         itemsMoved.addAll(items);
         items.clear();
         var loopRunLimit = 1000;
@@ -52,29 +63,29 @@ public class TS_VisualOrgChart {
             loopRunLimit--;
             if (loopRunLimit == 0) {
                 d.ce("sortItemsByHierarchy", "ERROR: loopRunLimit == 0 reached", "circuler related id'ed items will be skipped");
-                itemsMoved.forEach(si -> d.ce("sortItemsByHierarchy", "(id, parentId)", si.value0.id, si.value0.parentId));
+                itemsMoved.forEach(si -> d.ce("sortItemsByHierarchy", "(id, parentId)", si.balloon().id, si.balloon().parentId));
                 break;
             }
             var item = itemsMoved.get(0);
             //IF ITEM ID AND PARENT_ID EQUALS, OMIT ITEM
-            if (Objects.equals(item.value0.id, item.value0.parentId)) {
+            if (Objects.equals(item.balloon().id, item.balloon().parentId)) {
                 itemsMoved.remove(item);
-                d.ce("sortItemsByHierarchy", "ERROR: Objects.equals(item.value0.id, item.value0.parentId)", "item will be skipped", "(id, parentId)", item.value0.id, item.value0.parentId);
+                d.ce("sortItemsByHierarchy", "ERROR: Objects.equals(item.value0.id, item.value0.parentId)", "item will be skipped", "(id, parentId)", item.balloon().id, item.balloon().parentId);
                 continue;
             }
             {// IF PARENT_ID IS NOT FOUND ON NEXT ITEMS AS ID, ACCEPT THE ITEM AS NEXT HIERARCY ELEMENT AS MOVING
                 var idx_superIdFound = IntStream.range(1, itemsMoved.size())
-                        .filter(i -> Objects.equals(itemsMoved.get(i).value0.id, item.value0.parentId))
+                        .filter(i -> Objects.equals(itemsMoved.get(i).balloon().id, item.balloon().parentId))
                         .findAny().orElse(-1);
                 if (idx_superIdFound == -1) {
-                    d.ci("sortItemsByHierarchy", "idx_superIdFound == -1", "(id, parentId)", item.value0.id, item.value0.parentId);
+                    d.ci("sortItemsByHierarchy", "idx_superIdFound == -1", "(id, parentId)", item.balloon().id, item.balloon().parentId);
                     itemsMoved.remove(item);
                     items.add(item);
                     continue;
                 }
             }
             {//PUT THE USELESS ITEM TO LAST TO DEAL LATER
-                d.ci("sortItemsByHierarchy", "uselessItem", "(id, parentId)", item.value0.id, item.value0.parentId);
+                d.ci("sortItemsByHierarchy", "uselessItem", "(id, parentId)", item.balloon().id, item.balloon().parentId);
                 itemsMoved.remove(item);
                 itemsMoved.add(item);
             }
@@ -107,10 +118,10 @@ public class TS_VisualOrgChart {
         //KICK PARENT ID TO A HIDDEN ONE IF kickChildrenDownCount proccessed before
         if (placementConfig == null || placementConfig.kickable) {
             var kickParentId = kickParentId_from_to.stream()
-                    .filter(ft -> Objects.equals(ft.value0, balloonConfigMutable.parentId))
+                    .filter(ft -> Objects.equals(ft.parentIdFrom, balloonConfigMutable.parentId))
                     .findAny().orElse(null);
             if (kickParentId != null) {
-                balloonConfigMutable.parentId = kickParentId.value1;
+                balloonConfigMutable.parentId = kickParentId.parentIdTo;
             }
         }
         //CONSTRUCT ballonsPre
@@ -145,7 +156,7 @@ public class TS_VisualOrgChart {
                 ));
                 hidemeParentId = hidemeId;
             }
-            kickParentId_from_to.add(TGS_Tuple2.of(balloonConfigMutable.id, hidemeParentId));
+            kickParentId_from_to.add(new Kick(balloonConfigMutable.id, hidemeParentId));
         }
         //ADD STYLE DATA
         if (placementConfig != null && placementConfig.dotted) {
