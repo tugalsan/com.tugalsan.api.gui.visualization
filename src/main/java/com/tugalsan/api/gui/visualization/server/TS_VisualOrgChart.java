@@ -160,7 +160,7 @@ public class TS_VisualOrgChart {
             d.ci("balloonScript", b.id, b.parentId, b.tooltip, b.htmlHeader);
         });
         //POST AS STR
-        return TGS_StringUtils.concat(TGS_StreamUtils.toLst(
+        return TGS_StringUtils.cmn().concat(TGS_StreamUtils.toLst(
                 ballonsAll.stream().map(b -> balloonScript(b).toString())
         ));
     }
@@ -168,7 +168,7 @@ public class TS_VisualOrgChart {
     private StringBuilder balloonScript(TS_VisualOrgChart_ConfigBalloon balloonConfig) {
         balloonConfig = balloonConfig.cloneIt();
         var sb = new StringBuilder();
-        if (TGS_StringUtils.isNullOrEmpty(balloonConfig.parentId) || Objects.equals(balloonConfig.parentId.trim(), "0")) {
+        if (TGS_StringUtils.cmn().isNullOrEmpty(balloonConfig.parentId) || Objects.equals(balloonConfig.parentId.trim(), "0")) {
             balloonConfig.parentId = "";
         }
         sb.append("        [");
