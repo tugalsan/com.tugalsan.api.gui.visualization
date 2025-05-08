@@ -88,7 +88,7 @@ public class TS_VisualOrgChart {
                             border-collapse: separate;
                         }
                     </style>
-                    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+                    <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script><!-- old https://www.google.com/jsapi -->
                     <script type='text/javascript'>
                     google.load('visualization', '1', {packages:['orgchart']});
                     google.setOnLoadCallback(drawChart);
