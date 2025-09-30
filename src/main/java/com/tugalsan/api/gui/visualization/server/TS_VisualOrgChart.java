@@ -1,18 +1,16 @@
 package com.tugalsan.api.gui.visualization.server;
 
-import com.tugalsan.api.log.server.TS_Log;
-import com.tugalsan.api.random.client.TGS_RandomUtils;
-import com.tugalsan.api.stream.client.TGS_StreamUtils;
-import com.tugalsan.api.string.client.TGS_StringUtils;
-import com.tugalsan.api.tuple.client.TGS_Tuple2;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.IntStream;
+import module com.tugalsan.api.log;
+import module com.tugalsan.api.random;
+import module com.tugalsan.api.stream;
+import module com.tugalsan.api.string;
+import module com.tugalsan.api.tuple;
+import java.util.*;
+import java.util.stream.*;
 
 public class TS_VisualOrgChart {
 
-    final private static TS_Log d = TS_Log.of( TS_VisualOrgChart.class);
+    final private static TS_Log d = TS_Log.of(TS_VisualOrgChart.class);
 
     private TS_VisualOrgChart() {
     }
